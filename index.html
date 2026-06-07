@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The 100 Greats of the Islamic Ummah — Reading Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --surface: #ffffff;
+      --surface-2: #f1efe8;
+      --border: rgba(0, 0, 0, 0.08);
+      --border-strong: rgba(0, 0, 0, 0.15);
+      --text: #2c2c2a;
+      --text-muted: #6b6b6b;
+      --text-faint: #999;
+      --accent: #1F4E5F;
+      --accent-light: #2d6b80;
+      --success: #0f6e56;
+      --danger: #a32d2d;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1a1a;
+        --surface: #242424;
+        --surface-2: #2e2e2e;
+        --border: rgba(255, 255, 255, 0.1);
+        --border-strong: rgba(255, 255, 255, 0.2);
+        --text: #e8e8e8;
+        --text-muted: #a0a0a0;
+        --text-faint: #707070;
+        --accent: #5ba8c1;
+        --accent-light: #7bbcd2;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); margin: 0; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    header { margin-bottom: 2rem; }
+    h1 { font-size: 26px; font-weight: 600; margin: 0 0 6px 0; color: var(--accent); letter-spacing: -0.01em; }
+    .subtitle { font-size: 14px; color: var(--text-muted); margin: 0; }
+    .progress-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .progress-stats { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+    .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .stat-value { font-size: 28px; font-weight: 600; color: var(--text); }
+    .stat-value .secondary { color: var(--text-faint); font-size: 20px; font-weight: 400; }
+    .progress-bar-track { height: 10px; background: var(--surface-2); border-radius: 5px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); transition: width 0.4s ease; border-radius: 5px; }
+    .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; }
+    button { font-family: inherit; font-size: 13px; font-weight: 500; padding: 8px 14px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+    button:hover { background: var(--surface-2); border-color: var(--accent); }
+    button:active { transform: scale(0.97); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+    button.primary:hover { background: var(--accent-light); border-color: var(--accent-light); }
+    .save-status { font-size: 12px; color: var(--text-faint); margin-left: auto; }
+    .save-status.success { color: var(--success); }
+    .save-status.error { color: var(--danger); }
+    .sync-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 2rem; font-size: 13px; }
+    .sync-card-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+    .sync-card-header strong { color: var(--text); font-weight: 500; }
+    .sync-card-body { margin-top: 12px; display: none; }
+    .sync-card.open .sync-card-body { display: block; }
+    .sync-card.open .chevron { transform: rotate(180deg); }
+    .chevron { transition: transform 0.2s; color: var(--text-muted); }
+    .sync-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .sync-code-display { background: var(--surface-2); border-radius: 6px; padding: 10px 12px; margin-top: 10px; font-family: monospace; font-size: 12px; word-break: break-all; cursor: pointer; display: none; }
+    .sync-code-display.shown { display: block; }
+    .sync-code-display:hover { background: var(--border); }
+    .sync-hint { color: var(--text-muted); font-size: 12px; margin-bottom: 6px; line-height: 1.5; }
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-bg.shown { display: flex; }
+    .modal { background: var(--surface); border-radius: 12px; padding: 1.5rem; max-width: 420px; width: 100%; border: 1px solid var(--border); }
+    .modal h3 { margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: var(--text); }
+    .modal p { margin: 0 0 12px 0; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .modal input { width: 100%; padding: 10px 12px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--bg); color: var(--text); font-family: monospace; font-size: 13px; margin-bottom: 12px; }
+    .modal input:focus { outline: none; border-color: var(--accent); }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    .era-header { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin: 2rem 0 8px 0; padding: 0 12px; }
+    .era-header:first-of-type { margin-top: 0; }
+    .chapter-list { display: flex; flex-direction: column; gap: 2px; }
+    .chapter-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: 8px; cursor: pointer; transition: background 0.15s; user-select: none; border: 1px solid transparent; }
+    .chapter-row:hover { background: var(--surface); border-color: var(--border); }
+    .chapter-row.checked { opacity: 0.5; }
+    .chapter-row.checked .chapter-title { text-decoration: line-through; }
+    .chapter-checkbox { width: 20px; height: 20px; border: 2px solid var(--border-strong); border-radius: 5px; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; background: var(--surface); }
+    .chapter-row.checked .chapter-checkbox { background: var(--accent); border-color: var(--accent); }
+    .chapter-checkbox svg { width: 12px; height: 12px; stroke: white; stroke-width: 3; fill: none; opacity: 0; transition: opacity 0.15s; }
+    .chapter-row.checked .chapter-checkbox svg { opacity: 1; }
+    .chapter-num { font-size: 12px; color: var(--text-faint); font-weight: 500; min-width: 32px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+    .chapter-title { font-size: 14px; color: var(--text); line-height: 1.45; flex: 1; }
+    footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-faint); text-align: center; line-height: 1.6; }
+    @media (max-width: 540px) { .container { padding: 1.5rem 1rem 3rem; } h1 { font-size: 22px; } .stat-value { font-size: 24px; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>The 100 Greats of the Islamic Ummah</h1>
+      <p class="subtitle">Reading progress tracker · Jihad Al-Turbani</p>
+    </header>
+
+    <div class="progress-card">
+      <div class="progress-stats">
+        <div>
+          <div class="stat-label">Chapters read</div>
+          <div class="stat-value"><span id="count-out">0</span> <span class="secondary">/ 100</span></div>
+        </div>
+        <div style="text-align: right;">
+          <div class="stat-label">Complete</div>
+          <div class="stat-value"><span id="percent-out">0</span>%</div>
+        </div>
+      </div>
+      <div class="progress-bar-track">
+        <div id="progress-bar" class="progress-bar-fill"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="reset-btn">↺ Reset all</button>
+      <button id="check-all-btn">✓ Mark all read</button>
+      <span class="save-status" id="save-indicator">Loading…</span>
+    </div>
+
+    <div class="sync-card" id="sync-card">
+      <div class="sync-card-header" id="sync-toggle">
+        <strong>↔ Sync between devices</strong>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="sync-card-body">
+        <div class="sync-hint">
+          Save your progress to the cloud, then load it on another device using the sync code.
+        </div>
+        <div class="sync-buttons">
+          <button id="upload-btn" class="primary">↑ Get sync code</button>
+          <button id="download-btn">↓ Load from code</button>
+        </div>
+        <div id="sync-code-display" class="sync-code-display" title="Click to copy"></div>
+      </div>
+    </div>
+
+    <div id="chapter-list" class="chapter-list"></div>
+
+    <footer>
+      Progress saves automatically in this browser.<br>
+      To sync between devices, use the sync code above.
+    </footer>
+  </div>
+
+  <div class="modal-bg" id="load-modal">
+    <div class="modal">
+      <h3>Load progress from sync code</h3>
+      <p>Paste the sync code from your other device. This will replace your current progress on this device.</p>
+      <input type="text" id="sync-input" placeholder="Paste sync code here…" autocomplete="off" />
+      <div class="modal-actions">
+        <button id="cancel-load">Cancel</button>
+        <button id="confirm-load" class="primary">Load</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================
+    // CONFIGURATION — paste your JSONBin Master Key below
+    // Get one free at https://jsonbin.io (Sign Up → API Keys)
+    // =========================================================
+    const JSONBIN_API_KEY = "$2a$10$8tRW0aBqyiOzfySCAu35tOxZVnZPx4qi9RGH.ryqq59KH6C8YvEu.";
+    // =========================================================
+
+    const chapters = [
+      { era: "Companions & foundations", items: [
+        [1, "Abu Bakr al-Siddiq — The First Great"],
+        [2, "Muhammad ibn Abd al-Karim al-Khattabi — Legend of the Islamic Maghrib"],
+        [3, "Lady Hajar"],
+        [4, "Amr ibn al-As — The Arabs' cunning strategist"],
+        [5, "Al-Najashi (Negus) — The unknown soldier"],
+        [6, "The Sahaba (Companions)"],
+        [7, "The Badriyyun (veterans of Badr)"],
+        [8, "Al-Zubayr ibn al-Awwam — Disciple of the Messenger"],
+        [9, "Talha ibn Ubaydullah"],
+      ]},
+      { era: "Ottoman power", items: [
+        [10, "Selim I — Destroyer of the Safavid state"],
+        [11, "The Barbarossa Brothers — Giants of Islamic naval power"],
+        [12, "Suleiman the Magnificent"],
+        [13, "Sulayman al-Halabi"],
+      ]},
+      { era: "North African resistance", items: [
+        [14, "Emir Abd al-Qadir al-Jazairi — Giant of Algeria"],
+        [15, "Abd al-Hamid ibn Badis"],
+        [16, "The Berbers (Amazigh)"],
+        [17, "Tariq ibn Ziyad"],
+        [18, "Musa ibn Nusayr — The devout commander"],
+      ]},
+      { era: "Conquest-era commanders", items: [
+        [19, "Khalid ibn al-Walid — The brilliant commander"],
+        [20, "Abu Ubayda ibn al-Jarrah — The Trusted of this Ummah"],
+        [21, "The Unknown Boy (al-Ghulam)"],
+        [22, "Ikrima ibn Abi Jahl"],
+        [23, "Abu Sufyan ibn Harb"],
+      ]},
+      { era: "Seekers & monotheists", items: [
+        [24, "Saghatir — Archbishop of the Roman Empire"],
+        [25, "Anselm Turmeda (Abdullah al-Mayurqi)"],
+        [26, "Salman al-Farisi — The seeker of happiness"],
+        [27, "Arius"],
+      ]},
+      { era: "Heroic resistance", items: [
+        [28, "Umar al-Mukhtar — Lion of the Desert"],
+        [29, "Umar ibn al-Khattab — The breaker of Khosrow's rib"],
+        [30, "Zayd ibn Amr — Giant of monotheism"],
+        [31, "Said ibn Zayd — Commander of Islamic cavalry"],
+        [32, "Zayd ibn al-Khattab — The Falcon of Yamama"],
+      ]},
+      { era: "Reformers & the Almoravids", items: [
+        [33, "Muhammad ibn Abd al-Wahhab"],
+        [34, "Abdullah ibn Yasin — Founder of the Almoravids"],
+        [35, "Abu Bakr ibn Umar al-Lamtuni — Conqueror of Africa"],
+        [36, "Al-Mutawakkil ibn al-Aftas"],
+        [37, "Yusuf ibn Tashfin — Leader of the Almoravid empire"],
+        [38, "Abd al-Rahman al-Nasir"],
+        [39, "Banu Umayya — The white-clothed ones"],
+      ]},
+      { era: "Rightly Guided Caliphs & the early state", items: [
+        [40, "Uthman ibn Affan — Target number one of history's invaders"],
+        [41, "Muawiya ibn Abi Sufyan — Uncle of the Believers"],
+        [42, "Ali ibn Abi Talib — The Hero"],
+        [43, "Al-Hasan ibn Ali — Fifth of the Rightly Guided"],
+        [44, "Yazid ibn Muawiya — First besieger of Constantinople"],
+        [45, "Abu Ayyub al-Ansari — Lion of Constantinople"],
+        [46, "Mehmed the Conqueror — Bearer of the Prophet's tidings"],
+        [47, "Murad II"],
+      ]},
+      { era: "Women of the faith", items: [
+        [48, "Fatima bint Muhammad — Chief of the women of Paradise"],
+        [49, "Khadija bint Khuwaylid — Symbol of the righteous wife"],
+        [50, "Aisha — Mother of the Believers"],
+        [51, "Maryam (Mary)"],
+        [52, "The mother of Musa"],
+        [53, "Asiya bint Muzahim"],
+        [54, "The hairdresser of Pharaoh's daughter"],
+      ]},
+      { era: "Conversions & Mamluk-era figures", items: [
+        [55, "Maurice Bucaille — The French scholar"],
+        [56, "Ali Ahmad al-Jarjawi — Conqueror of Japan"],
+        [57, "Sayf al-Din Qutuz — Vanquisher of the Mongols"],
+        [58, "Al-Izz ibn Abd al-Salam — Sultan of the Scholars"],
+        [59, "Ibn Taymiyya — Sheikh of Islam"],
+      ]},
+      { era: "Science & exploration", items: [
+        [60, "Thabit ibn Qurra — The Euclid of the Arabs"],
+        [61, "Abbas ibn Firnas — History's first astronaut"],
+        [62, "Piri Reis — Discoverer of America"],
+        [63, "The Native Americans — Muslims who Muslims don't know"],
+        [64, "Zumbi — President of the Islamic Brazil"],
+        [65, "Lapu-Lapu — Sultan of the Islamic Philippines"],
+        [66, "Abd al-Rahman Ibrahima ibn Sori — Prince among slaves"],
+        [67, "Malcolm X"],
+        [68, "Abraham Lincoln — The American Muslim president"],
+      ]},
+      { era: "Andalusi twilight & Crusades", items: [
+        [69, "Muhammad ibn Umayya — Leader of the Morisco uprising"],
+        [70, "Yaqub ibn Abd al-Haqq al-Marini — Savior of Andalusi heritage"],
+        [71, "Yaqub al-Mansur al-Muwahhidi — Hero of Alarcos"],
+        [72, "Salah al-Din al-Ayyubi — Hero of Hattin"],
+        [73, "Nur al-Din Zangi — The martyr"],
+      ]},
+      { era: "Hadith masters", items: [
+        [74, "The Believing Persians"],
+        [75, "Imam al-Bukhari"],
+        [76, "Muhammad Nasir al-Din al-Albani — Hadith master of the Ummah"],
+        [77, "Abu Hurayra"],
+        [78, "Imam al-Shawkani"],
+      ]},
+      { era: "Defenders & the Prophet's circle", items: [
+        [79, "The Ansar — Only a believer loves them"],
+        [80, "Muhammad ibn Maslama — Commander of the Prophetic commandos"],
+        [81, "Sad ibn Abi Waqqas — Destroyer of the Persian Empire"],
+        [82, "The Lions of Qadisiyya"],
+        [83, "The Arabs"],
+      ]},
+      { era: "Poets, scholars & emissaries", items: [
+        [84, "Zuhayr ibn Abi Sulma — Greatest poet in human history"],
+        [85, "The Prophet's poets — His ministers of media"],
+        [86, "The Three Knights — Zayd, Jafar, Ibn Rawaha"],
+        [87, "The Four Abdullahs"],
+        [88, "Harun al-Rashid — The ascetic caliph"],
+        [89, "Ahmad ibn Fadlan — The thirteenth warrior"],
+        [90, "Aurangzeb Alamgir — The scholar-sultan"],
+      ]},
+      { era: "Modern revival & resistance", items: [
+        [91, "Muhammad Ali Jinnah — My greatest leader"],
+        [92, "Ahmed Deedat — Lion of South Africa"],
+        [93, "The Three Who Stayed Behind"],
+        [94, "Abd al-Rahman ibn Awf — Founder of Islamic economics"],
+        [95, "Abd al-Aziz al-Thaalibi — Eagle of Green Tunisia"],
+        [96, "Izz al-Din al-Qassam — Leader of the Palestinian revolution"],
+        [97, "Abd al-Hamid II — The caliph who sacrificed his throne for Palestine"],
+      ]},
+      { era: "The present and beyond", items: [
+        [98, "The New Ottomans — Erbakan, Erdogan, Gul, Davutoglu"],
+        [99, "The Generation of the Awakening"],
+        [100, "The Hundredth Great — Ertugrul (?)"],
+      ]},
+    ];
+
+    const STORAGE_KEY = "turbani_100_greats_progress_v1";
+    const SYNC_CODE_KEY = "turbani_100_greats_sync_id_v1";
+    let state = {};
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) state = JSON.parse(raw);
+      } catch (e) { state = {}; }
+    }
+
+    function saveState() {
+      const indicator = document.getElementById("save-indicator");
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        indicator.textContent = "✓ Saved locally";
+        indicator.className = "save-status success";
+        setTimeout(() => {
+          indicator.textContent = "Saves locally on every change";
+          indicator.className = "save-status";
+        }, 1200);
+      } catch (e) {
+        indicator.textContent = "Save failed";
+        indicator.className = "save-status error";
+      }
+    }
+
+    function render() {
+      const list = document.getElementById("chapter-list");
+      list.innerHTML = "";
+      chapters.forEach(group => {
+        const header = document.createElement("div");
+        header.className = "era-header";
+        header.textContent = group.era;
+        list.appendChild(header);
+        group.items.forEach(([num, title]) => {
+          const row = document.createElement("div");
+          row.className = "chapter-row" + (state[num] ? " checked" : "");
+          row.dataset.num = num;
+          row.innerHTML = `
+            <div class="chapter-checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+            <div class="chapter-num">#${num}</div>
+            <div class="chapter-title">${title}</div>
+          `;
+          row.addEventListener("click", () => toggle(num));
+          list.appendChild(row);
+        });
+      });
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const checked = Object.values(state).filter(Boolean).length;
+      document.getElementById("count-out").textContent = checked;
+      document.getElementById("percent-out").textContent = checked;
+      document.getElementById("progress-bar").style.width = checked + "%";
+    }
+
+    function toggle(num) {
+      state[num] = !state[num];
+      const row = document.querySelector(`.chapter-row[data-num="${num}"]`);
+      if (row) row.classList.toggle("checked");
+      updateProgress();
+      saveState();
+    }
+
+    document.getElementById("reset-btn").addEventListener("click", () => {
+      if (confirm("Reset all progress on this device?")) {
+        state = {};
+        render();
+        saveState();
+      }
+    });
+
+    document.getElementById("check-all-btn").addEventListener("click", () => {
+      for (let i = 1; i <= 100; i++) state[i] = true;
+      render();
+      saveState();
+    });
+
+    document.getElementById("sync-toggle").addEventListener("click", () => {
+      document.getElementById("sync-card").classList.toggle("open");
+    });
+
+    function checkApiKey() {
+      if (!JSONBIN_API_KEY || JSONBIN_API_KEY === "$2a$10$8tRW0aBqyiOzfySCAu35tOxZVnZPx4qi9RGH.ryqq59KH6C8YvEu.") {
+        alert("Sync is not configured.\n\nEdit index.html and paste your JSONBin Master Key into the JSONBIN_API_KEY variable near the top of the <script> section.\n\nGet a free key at jsonbin.io");
+        return false;
+      }
+      return true;
+    }
+
+    async function uploadProgress() {
+      if (!checkApiKey()) return;
+      const btn = document.getElementById("upload-btn");
+      const display = document.getElementById("sync-code-display");
+      btn.disabled = true;
+      btn.textContent = "Uploading…";
+
+      try {
+        const existingId = localStorage.getItem(SYNC_CODE_KEY);
+        let url, method;
+        if (existingId) {
+          url = `https://api.jsonbin.io/v3/b/${existingId}`;
+          method = "PUT";
+        } else {
+          url = "https://api.jsonbin.io/v3/b";
+          method = "POST";
+        }
+
+        const response = await fetch(url, {
+          method: method,
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": JSONBIN_API_KEY,
+            "X-Bin-Private": "true"
+          },
+          body: JSON.stringify(state)
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const result = await response.json();
+        const binId = existingId || result.metadata.id;
+        localStorage.setItem(SYNC_CODE_KEY, binId);
+
+        display.textContent = binId;
+        display.classList.add("shown");
+        btn.textContent = "↑ Update sync code";
+      } catch (e) {
+        alert("Upload failed: " + e.message + "\n\nCheck your internet and API key.");
+        btn.textContent = "↑ Get sync code";
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function openLoadModal() {
+      if (!checkApiKey()) return;
+      document.getElementById("sync-input").value = "";
+      document.getElementById("load-modal").classList.add("shown");
+      setTimeout(() => document.getElementById("sync-input").focus(), 50);
+    }
+
+    function closeLoadModal() {
+      document.getElementById("load-modal").classList.remove("shown");
+    }
+
+    async function loadFromCode() {
+      const code = document.getElementById("sync-input").value.trim();
+      if (!code) return;
+      const btn = document.getElementById("confirm-load");
+      btn.disabled = true;
+      btn.textContent = "Loading…";
+
+      try {
+        const response = await fetch(`https://api.jsonbin.io/v3/b/${code}/latest`, {
+          headers: { "X-Master-Key": JSONBIN_API_KEY }
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const result = await response.json();
+        state = result.record || {};
+        localStorage.setItem(SYNC_CODE_KEY, code);
+        render();
+        saveState();
+        closeLoadModal();
+        document.getElementById("sync-code-display").textContent = code;
+        document.getElementById("sync-code-display").classList.add("shown");
+        document.getElementById("upload-btn").textContent = "↑ Update sync code";
+      } catch (e) {
+        alert("Couldn't load that code. Make sure it was copied correctly.\n\nError: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Load";
+      }
+    }
+
+    document.getElementById("upload-btn").addEventListener("click", uploadProgress);
+    document.getElementById("download-btn").addEventListener("click", openLoadModal);
+    document.getElementById("cancel-load").addEventListener("click", closeLoadModal);
+    document.getElementById("confirm-load").addEventListener("click", loadFromCode);
+    document.getElementById("load-modal").addEventListener("click", (e) => {
+      if (e.target.id === "load-modal") closeLoadModal();
+    });
+    document.getElementById("sync-input").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") loadFromCode();
+    });
+
+    document.getElementById("sync-code-display").addEventListener("click", () => {
+      const display = document.getElementById("sync-code-display");
+      const code = display.textContent;
+      if (code.startsWith("✓")) return;
+      navigator.clipboard.writeText(code).then(() => {
+        display.textContent = "✓ Copied to clipboard!";
+        setTimeout(() => { display.textContent = code; }, 1200);
+      });
+    });
+
+    loadState();
+    render();
+    document.getElementById("save-indicator").textContent = "Saves locally on every change";
+
+    const existingCode = localStorage.getItem(SYNC_CODE_KEY);
+    if (existingCode) {
+      document.getElementById("sync-code-display").textContent = existingCode;
+      document.getElementById("sync-code-display").classList.add("shown");
+      document.getElementById("upload-btn").textContent = "↑ Update sync code";
+    }
+  </script>
+</body>
+</html>
